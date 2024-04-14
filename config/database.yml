@@ -1,0 +1,21 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  # host deve ser o nome do serviço do Postgres definido no docker-compose.yml, que é 'db'
+  host: db
+  username: myuser
+  password: mypassword
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+
+development:
+  <<: *default
+  database: mydatabase_development
+
+# Configuração do teste pode ser duplicada da desenvolvimento
+test:
+  <<: *default
+  database: mydatabase_test
+
+production:
+  <<: *default
+  database: mydatabase_production
