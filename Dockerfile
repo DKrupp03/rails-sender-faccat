@@ -13,21 +13,21 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
     && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
     && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
-# Configura o diretório de trabalho dentro do container
+# Define o diretório de trabalho no container
 WORKDIR /app
 
 # Copia o Gemfile e Gemfile.lock para o container
-COPY Gemfile /app/Gemfile
-COPY Gemfile.lock /app/Gemfile.lock
+COPY Gemfile Gemfile.lock ./
 
 # Instala as gems
 RUN bundle install
 
-# Copia o resto da aplicação para o container
-COPY . /app
+# Agora, copia o restante dos arquivos do projeto para o container
+COPY . .
 
 # Expõe a porta 3000
 EXPOSE 3000
 
-# Inicia o dockerize, espera pelo RabbitMQ, e então inicia o servidor Rails
-CMD sh -c "rm -f /app/tmp/pids/server.pid && dockerize -wait tcp://rabbitmq:5672 -timeout 60s && rails server -b '0.0.0.0'"
+# Define um comando de entrada que configura corretamente o ambiente Rails
+# antes de iniciar o servidor Rails
+ENTRYPOINT ["sh", "-c", "rm -f tmp/pids/server.pid && dockerize -wait tcp://rabbitmq:5672 -timeout 60s && rails server -b '0.0.0.0'"]
